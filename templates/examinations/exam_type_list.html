@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Exam Types{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold">Exam Types</h2>
+            <p class="text-gray-500">Manage exam types</p>
+        </div>
+        <a href="{% url 'exam-type-create' %}" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
+            <i class="ri-add-line mr-2"></i> Add
+        </a>
+    </div>
+    <div class="p-6">
+        <div class="space-y-4">
+            {% for exam_type in exam_types %}
+            <div class="flex items-center justify-between p-4 border rounded-xl">
+                <div>
+                    <h3 class="font-semibold">{{ exam_type.name }}</h3>
+                    <p class="text-sm text-gray-500">{{ exam_type.description|default:"No description" }}</p>
+                </div>
+                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                    {{ exam_type.weight_percentage }}%
+                </span>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No exam types</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

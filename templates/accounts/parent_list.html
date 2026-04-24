@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Parents{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700">
+        <h2 class="text-2xl font-bold">Parents Management</h2>
+        <p class="text-gray-500 dark:text-gray-400">Manage parent records</p>
+    </div>
+    
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for parent in parents %}
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 hover:shadow-lg transition">
+                <div class="flex items-center mb-4">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-r from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-xl mr-4">
+                        {{ parent.user.first_name|make_list|first|upper }}
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-lg">{{ parent.user.get_full_name }}</h3>
+                        <p class="text-sm text-gray-500">{{ parent.occupation|default:"-" }}</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                        <i class="ri-mail-line w-6"></i>
+                        <span>{{ parent.user.email }}</span>
+                    </div>
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                        <i class="ri-phone-line w-6"></i>
+                        <span>{{ parent.user.phone|default:"-" }}</span>
+                    </div>
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                        <i class="ri-group-line w-6"></i>
+                        <span>{{ parent.children.count }} children</span>
+                    </div>
+                </div>
+                
+                {% if parent.children.exists %}
+                <div class="mt-4 pt-4 border-t dark:border-gray-600">
+                    <p class="text-sm text-gray-500 mb-2">Children:</p>
+                    <div class="space-y-1">
+                        {% for child in parent.children.all %}
+                        <p class="text-sm font-medium">{{ child.user.get_full_name }} ({{ child.student_id }})</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-8 text-gray-500">
+                <i class="ri-parent-line text-4xl mb-2"></i>
+                <p>No parents found</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

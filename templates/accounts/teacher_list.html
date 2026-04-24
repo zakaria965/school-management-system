@@ -15,6 +15,29 @@
     </div>
     
     <div class="p-6">
+        <!-- Search & Filters -->
+        <form method="get" class="mb-6 flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <div class="relative">
+                    <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" name="search" value="{{ search }}" placeholder="Search by name, email, ID..." 
+                        class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+            </div>
+            <select name="department" class="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700">
+                <option value="">All Departments</option>
+                {% for dept in departments %}
+                <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>{{ dept }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+                Filter
+            </button>
+            <a href="{% url 'teacher-list' %}" class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                Reset
+            </a>
+        </form>
+        
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for teacher in teachers %}
             <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 hover:shadow-lg transition">
@@ -24,7 +47,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold text-lg">{{ teacher.user.get_full_name }}</h3>
-                        <p class="text-sm text-gray-500">{{ teacher.designation }}</p>
+                        <p class="text-sm text-gray-500">{{ teacher.get_designation_display }}</p>
                     </div>
                 </div>
                 
@@ -41,15 +64,24 @@
                         <i class="ri-mail-line w-6"></i>
                         <span>{{ teacher.user.email|truncatechars:20 }}</span>
                     </div>
+                    <div class="flex items-center text-gray-600 dark:text-gray-400">
+                        <i class="ri-time-line w-6"></i>
+                        <span>{{ teacher.experience_years }} years experience</span>
+                    </div>
                 </div>
                 
-                <div class="flex items-center justify-end space-x-2 mt-4 pt-4 border-t dark:border-gray-600">
-                    <a href="{% url 'teacher-update' teacher.pk %}" class="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition" title="Edit">
-                        <i class="ri-edit-line"></i>
-                    </a>
-                    <a href="{% url 'teacher-delete' teacher.pk %}" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition" title="Delete">
-                        <i class="ri-delete-bin-line"></i>
-                    </a>
+                <div class="flex items-center justify-between mt-4 pt-4 border-t dark:border-gray-600">
+                    <span class="px-2 py-1 rounded text-xs {% if teacher.is_active %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                        {% if teacher.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                    <div class="flex space-x-1">
+                        <a href="{% url 'teacher-update' teacher.pk %}" class="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition" title="Edit">
+                            <i class="ri-edit-line"></i>
+                        </a>
+                        <a href="{% url 'teacher-delete' teacher.pk %}" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition" title="Delete">
+                            <i class="ri-delete-bin-line"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
             {% empty %}
@@ -59,6 +91,30 @@
             </div>
             {% endfor %}
         </div>
+        
+        {% if page_obj.has_other_pages %}
+        <div class="mt-6 flex justify-center">
+            <div class="flex items-center space-x-1">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if selected_department %}&department={{ selected_department }}{% endif %}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="ri-arrow-left-line"></i>
+                </a>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="px-4 py-2 bg-primary-600 text-white rounded-lg">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if selected_department %}&department={{ selected_department }}{% endif %}" class="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if selected_department %}&department={{ selected_department }}{% endif %}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

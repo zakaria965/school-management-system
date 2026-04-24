@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Fee Structures{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold">Fee Structures</h2>
+            <p class="text-gray-500">Manage fee structures by class</p>
+        </div>
+        <a href="{% url 'fee-structure-create' %}" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
+            <i class="ri-add-line mr-2"></i> Add
+        </a>
+    </div>
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b dark:border-gray-700">
+                        <th class="text-left py-3">Fee Type</th>
+                        <th class="text-left py-3">Class Level</th>
+                        <th class="text-left py-3">Amount</th>
+                        <th class="text-left py-3">Due Date</th>
+                        <th class="text-left py-3">Academic Year</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y dark:divide-gray-700">
+                    {% for structure in fee_structures %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td class="py-3">{{ structure.fee_type.name }}</td>
+                        <td class="py-3">{{ structure.class_level.name }}</td>
+                        <td class="py-3 font-semibold">${{ structure.amount }}</td>
+                        <td class="py-3">{{ structure.due_date }}</td>
+                        <td class="py-3">{{ structure.academic_year.name }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="py-4 text-center text-gray-500">No fee structures</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Fee Types{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold">Fee Types</h2>
+            <p class="text-gray-500">Manage fee types</p>
+        </div>
+        <a href="{% url 'fee-type-create' %}" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
+            <i class="ri-add-line mr-2"></i> Add
+        </a>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% for fee_type in fee_types %}
+            <div class="p-4 border rounded-xl hover:shadow-md transition">
+                <h3 class="font-semibold">{{ fee_type.name }}</h3>
+                <p class="text-sm text-gray-500">{{ fee_type.description|default:"No description" }}</p>
+                <span class="text-xs {% if fee_type.is_recurring %}text-green-600{% else %}text-gray-500{% endif %}">
+                    {% if fee_type.is_recurring %}Recurring{% else %}One-time{% endif %}
+                </span>
+            </div>
+            {% empty %}
+            <p class="col-span-full text-gray-500 text-center py-4">No fee types</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

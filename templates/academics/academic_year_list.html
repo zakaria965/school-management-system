@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Academic Years{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold">Academic Years</h2>
+            <p class="text-gray-500">Manage academic years</p>
+        </div>
+        <a href="{% url 'academic-year-create' %}" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700">
+            <i class="ri-add-line mr-2"></i> Add
+        </a>
+    </div>
+    <div class="p-6">
+        <div class="space-y-4">
+            {% for year in academic_years %}
+            <div class="flex items-center justify-between p-4 border rounded-xl">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4">
+                        <i class="ri-calendar-line text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">{{ year.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ year.start_date }} - {{ year.end_date }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    {% if year.is_current %}
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Current</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No academic years</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

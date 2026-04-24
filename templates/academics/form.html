@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block page_title %}{{ title|default:"Form" }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+        <div class="p-6 border-b dark:border-gray-700">
+            <h2 class="text-2xl font-bold">{{ title|default:"Form" }}</h2>
+            <p class="text-gray-500 dark:text-gray-400">Fill in the details below</p>
+        </div>
+        
+        <form method="post" class="p-6 space-y-6">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <div class="flex justify-end space-x-4 pt-4 border-t dark:border-gray-700">
+                <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+                    <i class="ri-save-line mr-2"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-row { margin-bottom: 1rem; }
+    .form-row label { display: block; font-weight: 500; margin-bottom: 0.5rem; }
+    .form-row input, .form-row select, .form-row textarea { 
+        width: 100%; 
+        padding: 0.75rem; 
+        border: 1px solid #e5e7eb; 
+        border-radius: 0.75rem; 
+        background: #f9fafb;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+        outline: none; border-color: #3b82f6; ring: 2px;
+    }
+    table.form-table { width: 100%; }
+    table.form-table td { padding: 0.5rem; }
+    table.form-table td:first-child { width: 200px; font-weight: 500; }
+</style>
+{% endblock %}

@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models import Count, Q
 from datetime import timedelta
 from .models import User, StudentProfile, TeacherProfile, ParentProfile
-from academics.models import ClassSection, Subject, AcademicYear, Assignment
+from academics.models import ClassSection, Subject, AcademicYear, Assignment, ClassLevel
 from attendance.models import Attendance
 from examinations.models import Grade, ExamSchedule
 from finance.models import FeePayment, Expense
@@ -213,7 +213,37 @@ class StudentListView(LoginRequiredMixin, ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        return StudentProfile.objects.select_related('user', 'class_section', 'class_section__class_level').all()
+        queryset = StudentProfile.objects.select_related('user', 'class_section', 'class_section__class_level').all()
+        
+        # Search functionality
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(student_id__icontains=search)
+            )
+        
+        # Filter by class
+        class_section = self.request.GET.get('class_section')
+        if class_section:
+            queryset = queryset.filter(class_section_id=class_section)
+        
+        # Filter by status
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        return queryset.order_by('-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['class_sections'] = ClassSection.objects.all()
+        context['search'] = self.request.GET.get('search', '')
+        context['selected_class'] = self.request.GET.get('class_section', '')
+        context['selected_status'] = self.request.GET.get('status', '')
+        return context
 
 
 class StudentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -252,7 +282,29 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'student'
     
     def get_queryset(self):
-        return StudentProfile.objects.select_related('user', 'class_section', 'class_section__class_level')
+        return StudentProfile.objects.select_related('user', 'class_section', 'class_section__class_level', 'parent__user')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        student = self.get_object()
+        
+        # Get attendance data
+        attendances = Attendance.objects.filter(student=student)
+        context['total_attendances'] = attendances.count()
+        context['present_count'] = attendances.filter(status='present').count()
+        context['absent_count'] = attendances.filter(status='absent').count()
+        context['late_count'] = attendances.filter(status='late').count()
+        
+        # Get grades
+        grades = Grade.objects.filter(student=student).select_related('exam__subject', 'exam__exam_type')
+        context['grades'] = grades[:10]
+        context['avg_marks'] = grades.aggregate(avg=models.Avg('marks_obtained'))['avg'] or 0
+        
+        # Get assignments
+        assignments = Assignment.objects.filter(class_section=student.class_section)[:5]
+        context['assignments'] = assignments
+        
+        return context
 
 
 class StudentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -271,7 +323,33 @@ class TeacherListView(LoginRequiredMixin, ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        return TeacherProfile.objects.select_related('user').all()
+        queryset = TeacherProfile.objects.select_related('user').all()
+        
+        # Search functionality
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(employee_id__icontains=search) |
+                Q(department__icontains=search)
+            )
+        
+        # Filter by department
+        department = self.request.GET.get('department')
+        if department:
+            queryset = queryset.filter(department=department)
+        
+        return queryset.order_by('-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search'] = self.request.GET.get('search', '')
+        context['selected_department'] = self.request.GET.get('department', '')
+        # Get unique departments
+        context['departments'] = TeacherProfile.objects.values_list('department', flat=True).distinct()
+        return context
 
 
 class TeacherCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
