@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Attendance{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold">Attendance Records</h2>
+            <p class="text-gray-500 dark:text-gray-400">View and manage attendance</p>
+        </div>
+        <div class="flex space-x-2">
+            <a href="{% url 'attendance-mark' %}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+                <i class="ri-add-line mr-2"></i> Mark Attendance
+            </a>
+            <a href="{% url 'attendance-mark-bulk' %}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition">
+                <i class="ri-file-list-line mr-2"></i> Bulk Mark
+            </a>
+        </div>
+    </div>
+    
+    <div class="p-6">
+        <!-- Filters -->
+        <form method="get" class="mb-6 flex flex-wrap gap-4">
+            <input type="date" name="date_from" value="{{ request.GET.date_from }}" 
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700">
+            <input type="date" name="date_to" value="{{ request.GET.date_to }}" 
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700">
+            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+                Filter
+            </button>
+        </form>
+        
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b dark:border-gray-700">
+                        <th class="text-left py-3 px-4 font-semibold">Student</th>
+                        <th class="text-left py-3 px-4 font-semibold">Date</th>
+                        <th class="text-left py-3 px-4 font-semibold">Status</th>
+                        <th class="text-left py-3 px-4 font-semibold">Remarks</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y dark:divide-gray-700">
+                    {% for att in attendances %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td class="py-3 px-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm font-semibold mr-2">
+                                    {{ att.student.user.first_name|make_list|first|upper }}
+                                </div>
+                                <div>
+                                    <p class="font-medium">{{ att.student.user.get_full_name }}</p>
+                                    <p class="text-xs text-gray-500">{{ att.student.student_id }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">{{ att.date }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-1 rounded-lg text-sm
+                                {% if att.status == 'present' %}bg-green-100 text-green-700
+                                {% elif att.status == 'absent' %}bg-red-100 text-red-700
+                                {% elif att.status == 'late' %}bg-yellow-100 text-yellow-700
+                                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                {{ att.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-gray-500">{{ att.remarks|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-gray-500">
+                            <i class="ri-calendar-check-line text-4xl mb-2"></i>
+                            <p>No attendance records found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if page_obj.has_other_pages %}
+        <div class="mt-6 flex justify-center">
+            <div class="flex items-center space-x-1">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="ri-arrow-left-line"></i>
+                </a>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="px-4 py-2 bg-primary-600 text-white rounded-lg">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" class="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

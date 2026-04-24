@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Announcements{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold">Announcements</h2>
+            <p class="text-gray-500 dark:text-gray-400">School announcements and notices</p>
+        </div>
+        <a href="{% url 'announcement-create' %}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+            <i class="ri-add-line mr-2"></i> New Announcement
+        </a>
+    </div>
+    
+    <div class="p-6">
+        <div class="space-y-4">
+            {% for announcement in announcements %}
+            <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-lg transition">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4
+                            {% if announcement.priority == 'urgent' %}bg-red-100 text-red-600
+                            {% elif announcement.priority == 'high' %}bg-orange-100 text-orange-600
+                            {% else %}bg-blue-100 text-blue-600{% endif %}">
+                            <i class="ri-megaphone-line text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">{{ announcement.title }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">{{ announcement.author.get_full_name }} | {{ announcement.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-lg text-xs
+                        {% if announcement.priority == 'urgent' %}bg-red-100 text-red-700
+                        {% elif announcement.priority == 'high' %}bg-orange-100 text-orange-700
+                        {% else %}bg-gray-100 text-gray-700{% endif %}">
+                        {{ announcement.get_priority_display }}
+                    </span>
+                </div>
+                <p class="mt-4 text-gray-600 dark:text-gray-400">{{ announcement.content }}</p>
+            </div>
+            {% empty %}
+            <div class="text-center py-8 text-gray-500">
+                <i class="ri-megaphone-line text-4xl mb-2"></i>
+                <p>No announcements</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -68,12 +68,16 @@ class FeePaymentListView(LoginRequiredMixin, ListView):
     model = FeePayment
     template_name = 'finance/fee_payment_list.html'
     context_object_name = 'payments'
+    paginate_by = 20
     
     def get_queryset(self):
         qs = FeePayment.objects.select_related('student__user', 'fee_structure__fee_type', 'fee_structure__class_level').all()
         if self.request.user.is_student:
-            qs = qs.filter(student=self.request.user.student_profile)
-        return qs
+            try:
+                qs = qs.filter(student=self.request.user.student_profile)
+            except StudentProfile.DoesNotExist:
+                qs = FeePayment.objects.none()
+        return qs.order_by('-payment_date')
 
 
 class ExpenseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Examinations{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold">Examination Schedule</h2>
+            <p class="text-gray-500 dark:text-gray-400">View exam schedule</p>
+        </div>
+        <a href="{% url 'exam-schedule-create' %}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+            <i class="ri-add-line mr-2"></i> Schedule Exam
+        </a>
+    </div>
+    
+    <div class="p-6">
+        <div class="space-y-4">
+            {% for exam in exams %}
+            <div class="flex items-center justify-between p-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-lg transition">
+                <div class="flex items-center flex-1">
+                    <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center mr-4">
+                        <i class="ri-file-text-line text-xl text-red-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">{{ exam.subject.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ exam.exam_type.name }} | {{ exam.class_section.name }}</p>
+                        <div class="flex items-center space-x-4 mt-2 text-sm">
+                            <span class="text-gray-500">
+                                <i class="ri-calendar-line mr-1"></i> {{ exam.date|date:"M d, Y" }}
+                            </span>
+                            <span class="text-gray-500">
+                                <i class="ri-time-line mr-1"></i> {{ exam.start_time }} - {{ exam.end_time }}
+                            </span>
+                            <span class="text-gray-500">
+                                <i class="ri-star-line mr-1"></i> {{ exam.total_marks }} marks
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-8 text-gray-500">
+                <i class="ri-calendar-line text-4xl mb-2"></i>
+                <p>No exams scheduled</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

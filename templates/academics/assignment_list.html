@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Assignments{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+    <div class="p-6 border-b dark:border-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold">Assignments</h2>
+            <p class="text-gray-500 dark:text-gray-400">Manage homework and assignments</p>
+        </div>
+        {% if request.user.is_admin or request.user.is_teacher %}
+        <a href="{% url 'assignment-create' %}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+            <i class="ri-add-line mr-2"></i> Create Assignment
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="p-6">
+        <div class="space-y-4">
+            {% for assignment in assignments %}
+            <div class="flex items-center justify-between p-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-lg transition">
+                <div class="flex items-center flex-1">
+                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mr-4">
+                        <i class="ri-file-text-line text-xl text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">{{ assignment.title }}</h3>
+                        <p class="text-sm text-gray-500">{{ assignment.subject.name }} | {{ assignment.class_section.name }}</p>
+                        <div class="flex items-center space-x-4 mt-2 text-sm">
+                            <span class="text-gray-500">
+                                <i class="ri-calendar-line mr-1"></i> Due: {{ assignment.due_date|date:"M d, Y" }}
+                            </span>
+                            <span class="text-gray-500">
+                                <i class="ri-star-line mr-1"></i> {{ assignment.total_marks }} marks
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-xs {% if assignment.is_published %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                                {% if assignment.is_published %}Published{% else %}Draft{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'assignment-detail' assignment.pk %}" class="px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-lg hover:bg-primary-200 transition">
+                    View
+                </a>
+            </div>
+            {% empty %}
+            <div class="text-center py-8 text-gray-500">
+                <i class="ri-file-text-line text-4xl mb-2"></i>
+                <p>No assignments found</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

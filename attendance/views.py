@@ -64,6 +64,7 @@ class AttendanceListView(LoginRequiredMixin, ListView):
     model = Attendance
     template_name = 'attendance/attendance_list.html'
     context_object_name = 'attendances'
+    paginate_by = 20
     
     def get_queryset(self):
         queryset = Attendance.objects.select_related('student__user').all()
@@ -79,9 +80,12 @@ class AttendanceListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(date__lte=date_to)
         
         if self.request.user.is_student:
-            queryset = queryset.filter(student=self.request.user.student_profile)
+            try:
+                queryset = queryset.filter(student=self.request.user.student_profile)
+            except StudentProfile.DoesNotExist:
+                queryset = Attendance.objects.none()
         
-        return queryset
+        return queryset.order_by('-date')
 
 
 class TeacherAttendanceCreateView(LoginRequiredMixin, CreateView):
@@ -107,7 +111,10 @@ class TeacherAttendanceListView(LoginRequiredMixin, ListView):
 @login_required
 def attendance_report(request):
     if request.user.is_student:
-        attendances = Attendance.objects.filter(student=request.user.student_profile)
+        try:
+            attendances = Attendance.objects.filter(student=request.user.student_profile)
+        except StudentProfile.DoesNotExist:
+            attendances = Attendance.objects.none()
     else:
         attendances = Attendance.objects.select_related('student__user').all()
     
