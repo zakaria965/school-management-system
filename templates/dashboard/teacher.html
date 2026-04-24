@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">My Subjects</p>
+                <p class="text-3xl font-bold">{{ subjects.count }}</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-book-2-line text-xl text-blue-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Assigned Classes</p>
+                <p class="text-3xl font-bold">{{ classes.count }}</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-home-line text-xl text-green-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Students</p>
+                <p class="text-3xl font-bold">{{ total_students }}</p>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-user-smile-line text-xl text-purple-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Pending Tasks</p>
+                <p class="text-3xl font-bold">0</p>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-task-line text-xl text-orange-600"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Schedule -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-semibold mb-4">My Subjects</h3>
+        <div class="space-y-3">
+            {% for subject in subjects %}
+            <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center mr-3">
+                    <i class="ri-book-line text-primary-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium">{{ subject.name }}</p>
+                    <p class="text-sm text-gray-500">{{ subject.class_level.name }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No subjects assigned</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-semibold mb-4">My Classes</h3>
+        <div class="space-y-3">
+            {% for section in classes %}
+            <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-3">
+                    <i class="ri-home-line text-green-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium">{{ section.name }}</p>
+                    <p class="text-sm text-gray-500">{{ section.class_level.name }} - {{ section.students.count }} students</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No classes assigned</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mt-6 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+    <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="{% url 'attendance-mark' %}" class="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 transition">
+            <i class="ri-calendar-check-line text-2xl text-blue-600 mb-2"></i>
+            <span class="text-sm font-medium">Mark Attendance</span>
+        </a>
+        <a href="{% url 'grade-create' %}" class="flex flex-col items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl hover:bg-green-100 transition">
+            <i class="ri-file-text-line text-2xl text-green-600 mb-2"></i>
+            <span class="text-sm font-medium">Add Grades</span>
+        </a>
+        <a href="{% url 'assignment-create' %}" class="flex flex-col items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl hover:bg-purple-100 transition">
+            <i class="ri-file-add-line text-2xl text-purple-600 mb-2"></i>
+            <span class="text-sm font-medium">Create Assignment</span>
+        </a>
+        <a href="{% url 'timetable-list' %}" class="flex flex-col items-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl hover:bg-orange-100 transition">
+            <i class="ri-calendar-line text-2xl text-orange-600 mb-2"></i>
+            <span class="text-sm font-medium">View Timetable</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

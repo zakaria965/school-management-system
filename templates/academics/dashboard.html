@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Academics Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Academics Management</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <a href="{% url 'academic-year-list' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-gray-500 dark:text-gray-400 text-sm">Academic Years</h3>
+        <p class="text-2xl font-bold">{{ academic_years_count|default:0 }}</p>
+    </a>
+    <a href="{% url 'class-level-list' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-gray-500 dark:text-gray-400 text-sm">Class Levels</h3>
+        <p class="text-2xl font-bold">{{ class_levels_count|default:0 }}</p>
+    </a>
+    <a href="{% url 'class-section-list' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-gray-500 dark:text-gray-400 text-sm">Sections</h3>
+        <p class="text-2xl font-bold">{{ sections_count|default:0 }}</p>
+    </a>
+    <a href="{% url 'subject-list' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-gray-500 dark:text-gray-400 text-sm">Subjects</h3>
+        <p class="text-2xl font-bold">{{ subjects_count|default:0 }}</p>
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Timetable</h2>
+            <a href="{% url 'timetable-create' %}" class="text-blue-600 hover:underline">Add</a>
+        </div>
+        <p class="text-gray-500">Manage class schedules and timetables</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Assignments</h2>
+            <a href="{% url 'assignment-list' %}" class="text-blue-600 hover:underline">View All</a>
+        </div>
+        <p class="text-gray-500">Create and manage assignments</p>
+    </div>
+</div>
+{% endblock %}

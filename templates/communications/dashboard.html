@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Communications{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Communications</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <a href="{% url 'announcement-list' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold">Announcements</h3>
+    </a>
+    <a href="{% url 'inbox' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold">Inbox</h3>
+    </a>
+    <a href="{% url 'notification-list' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold">Notifications</h3>
+    </a>
+</div>
+
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+    <h2 class="text-lg font-semibold mb-4">Recent Announcements</h2>
+    {% for announcement in announcements %}
+    <div class="border-b dark:border-gray-700 py-4">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="font-semibold">{{ announcement.title }}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ announcement.content }}</p>
+            </div>
+            <span class="px-2 py-1 text-xs rounded 
+                {% if announcement.priority == 'urgent' %}bg-red-100 text-red-800
+                {% elif announcement.priority == 'high' %}bg-orange-100 text-orange-800
+                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                {{ announcement.get_priority_display }}
+            </span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">{{ announcement.created_at|date:"M d, Y" }}</p>
+    </div>
+    {% empty %}
+    <p class="text-gray-500">No announcements</p>
+    {% endfor %}
+</div>
+{% endblock %}

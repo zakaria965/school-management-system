@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block page_title %}{{ title|default:"Student Form" }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+        <div class="p-6 border-b dark:border-gray-700">
+            <h2 class="text-2xl font-bold">{{ title|default:"Student Form" }}</h2>
+            <p class="text-gray-500 dark:text-gray-400">Fill in the student information</p>
+        </div>
+        
+        <form method="post" class="p-6 space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- User Fields -->
+                <div>
+                    <label class="block text-sm font-medium mb-2">First Name *</label>
+                    <input type="text" name="user.first_name" value="{{ form.user.first_name.value|default:'' }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Last Name *</label>
+                    <input type="text" name="user.last_name" value="{{ form.user.last_name.value|default:'' }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email *</label>
+                    <input type="email" name="user.email" value="{{ form.user.email.value|default:'' }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Username *</label>
+                    <input type="text" name="user.username" value="{{ form.user.username.value|default:'' }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <!-- Student Profile Fields -->
+                <div>
+                    <label class="block text-sm font-medium mb-2">Student ID *</label>
+                    <input type="text" name="student_id" value="{{ form.student_id.value|default:'' }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Class Section</label>
+                    <select name="class_section" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                        <option value="">Select Class</option>
+                        {% for section in class_sections %}
+                        <option value="{{ section.pk }}" {% if form.class_section.value == section.pk %}selected{% endif %}>
+                            {{ section.name }} - {{ section.class_level.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Admission Date *</label>
+                    <input type="date" name="admission_date" value="{{ form.admission_date.value|default:'' }}" required
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Blood Group</label>
+                    <select name="blood_group" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                        <option value="">Select</option>
+                        <option value="A+" {% if form.blood_group.value == 'A+' %}selected{% endif %}>A+</option>
+                        <option value="A-" {% if form.blood_group.value == 'A-' %}selected{% endif %}>A-</option>
+                        <option value="B+" {% if form.blood_group.value == 'B+' %}selected{% endif %}>B+</option>
+                        <option value="B-" {% if form.blood_group.value == 'B-' %}selected{% endif %}>B-</option>
+                        <option value="O+" {% if form.blood_group.value == 'O+' %}selected{% endif %}>O+</option>
+                        <option value="O-" {% if form.blood_group.value == 'O-' %}selected{% endif %}>O-</option>
+                        <option value="AB+" {% if form.blood_group.value == 'AB+' %}selected{% endif %}>AB+</option>
+                        <option value="AB-" {% if form.blood_group.value == 'AB-' %}selected{% endif %}>AB-</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Emergency Contact</label>
+                    <input type="text" name="emergency_contact" value="{{ form.emergency_contact.value|default:'' }}"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500">
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-4 pt-4 border-t dark:border-gray-700">
+                <a href="{% url 'student-list' %}" class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition">
+                    <i class="ri-save-line mr-2"></i> Save Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

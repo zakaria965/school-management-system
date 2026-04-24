@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Total Students</p>
+                <p class="text-3xl font-bold mt-1">{{ stats.total_students }}</p>
+                <p class="text-xs text-green-600 mt-1 flex items-center">
+                    <i class="ri-arrow-up-line"></i> +12 this month
+                </p>
+            </div>
+            <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-user-smile-line text-2xl text-blue-600 dark:text-blue-400"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Total Teachers</p>
+                <p class="text-3xl font-bold mt-1">{{ stats.total_teachers }}</p>
+                <p class="text-xs text-gray-500 mt-1">Active staff</p>
+            </div>
+            <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-professor-line text-2xl text-green-600 dark:text-green-400"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Total Classes</p>
+                <p class="text-3xl font-bold mt-1">{{ stats.total_classes }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ stats.total_sections }} sections</p>
+            </div>
+            <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-home-line text-2xl text-purple-600 dark:text-purple-400"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Attendance Today</p>
+                <p class="text-3xl font-bold mt-1">{{ stats.attendance_rate }}%</p>
+                <p class="text-xs text-gray-500 mt-1">{{ stats.present_today }} present</p>
+            </div>
+            <div class="w-14 h-14 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-calendar-check-line text-2xl text-orange-600 dark:text-orange-400"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Attendance Chart -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-semibold mb-4">Weekly Attendance</h3>
+        <canvas id="attendanceChart" height="200"></canvas>
+    </div>
+    
+    <!-- Performance Chart -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-semibold mb-4">Student Performance</h3>
+        <canvas id="performanceChart" height="200"></canvas>
+    </div>
+    
+    <!-- Finance Overview -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-semibold mb-4">Finance Overview</h3>
+        <canvas id="financeChart" height="200"></canvas>
+    </div>
+</div>
+
+<!-- Second Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Recent Activity -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Recent Activity</h3>
+            <a href="#" class="text-sm text-primary-600 hover:text-primary-700">View All</a>
+        </div>
+        <div class="space-y-4">
+            {% for activity in recent_activities %}
+            <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                <div class="w-10 h-10 rounded-full bg-{{ activity.color }}-100 dark:bg-{{ activity.color }}-900/30 flex items-center justify-center flex-shrink-0">
+                    <i class="ri-{{ activity.icon }} text-lg text-{{ activity.color }}-600 dark:text-{{ activity.color }}-400"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium">{{ activity.title }}</p>
+                    <p class="text-xs text-gray-500">{{ activity.description }}</p>
+                </div>
+                <span class="text-xs text-gray-400 whitespace-nowrap">{{ activity.time }}</span>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No recent activity</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Upcoming Events -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Upcoming Events</h3>
+            <a href="#" class="text-sm text-primary-600 hover:text-primary-700">Calendar</a>
+        </div>
+        <div class="space-y-3">
+            {% for event in upcoming_events %}
+            <div class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex flex-col items-center justify-center mr-3">
+                    <span class="text-xs text-primary-600 font-medium">{{ event.month }}</span>
+                    <span class="text-lg font-bold text-primary-700 dark:text-primary-300">{{ event.day }}</span>
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium">{{ event.title }}</p>
+                    <p class="text-sm text-gray-500">{{ event.description }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No upcoming events</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Third Row - Quick Actions & Notices -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Quick Actions -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-2 gap-3">
+            <a href="{% url 'student-create' %}" class="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition">
+                <i class="ri-user-add-line text-2xl text-blue-600 mb-2"></i>
+                <span class="text-sm font-medium">Add Student</span>
+            </a>
+            <a href="{% url 'teacher-create' %}" class="flex flex-col items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/40 transition">
+                <i class="ri-user-follow-line text-2xl text-green-600 mb-2"></i>
+                <span class="text-sm font-medium">Add Teacher</span>
+            </a>
+            <a href="{% url 'attendance-mark' %}" class="flex flex-col items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition">
+                <i class="ri-calendar-check-line text-2xl text-purple-600 mb-2"></i>
+                <span class="text-sm font-medium">Mark Attendance</span>
+            </a>
+            <a href="{% url 'assignment-create' %}" class="flex flex-col items-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/40 transition">
+                <i class="ri-file-add-line text-2xl text-orange-600 mb-2"></i>
+                <span class="text-sm font-medium">New Assignment</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Announcements -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Latest Announcements</h3>
+            <a href="{% url 'announcement-create' %}" class="text-sm text-primary-600 hover:text-primary-700">+ New</a>
+        </div>
+        <div class="space-y-3">
+            {% for announcement in announcements %}
+            <div class="flex items-start p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4 flex-shrink-0
+                    {% if announcement.priority == 'urgent' %}bg-red-100 dark:bg-red-900/30 text-red-600
+                    {% elif announcement.priority == 'high' %}bg-orange-100 dark:bg-orange-900/30 text-orange-600
+                    {% else %}bg-blue-100 dark:bg-blue-900/30 text-blue-600{% endif %}">
+                    <i class="ri-megaphone-line text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-semibold">{{ announcement.title }}</h4>
+                        <span class="text-xs text-gray-500">{{ announcement.created_at|timesince }} ago</span>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ announcement.content|truncatewords:20 }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No announcements</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Attendance Chart
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(attendanceCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            datasets: [{
+                label: 'Attendance',
+                data: [95, 92, 94, 96, 93, 90],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: false, min: 80, max: 100 }
+            }
+        }
+    });
+
+    // Performance Chart
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(performanceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Excellent', 'Good', 'Average', 'Below Average'],
+            datasets: [{
+                data: [35, 40, 18, 7],
+                backgroundColor: ['#22c55e', '#3b82f6', '#eab308', '#ef4444']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // Finance Chart
+    const financeCtx = document.getElementById('financeChart').getContext('2d');
+    new Chart(financeCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Income',
+                data: [45000, 52000, 48000, 61000, 55000, 67000],
+                backgroundColor: '#22c55e'
+            }, {
+                label: 'Expenses',
+                data: [32000, 35000, 38000, 42000, 39000, 45000],
+                backgroundColor: '#ef4444'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}

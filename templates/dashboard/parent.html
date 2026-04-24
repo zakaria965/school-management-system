@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Parent Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <h3 class="text-gray-500 dark:text-gray-400 text-sm">Children</h3>
+        <p class="text-3xl font-bold text-blue-600">{{ children_count|default:0 }}</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <h3 class="text-gray-500 dark:text-gray-400 text-sm">Messages</h3>
+        <p class="text-3xl font-bold text-green-600">{{ unread_messages|default:0 }}</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <h3 class="text-gray-500 dark:text-gray-400 text-sm">Announcements</h3>
+        <p class="text-3xl font-bold text-orange-600">{{ announcements_count|default:0 }}</p>
+    </div>
+</div>
+
+<div class="mt-8">
+    <h2 class="text-xl font-semibold mb-4">My Children's Performance</h2>
+    <div class="space-y-4">
+        {% for child in children %}
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <h3 class="font-semibold text-lg">{{ child.user.get_full_name }}</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Class: {{ child.class_section.name|default:"N/A" }}</p>
+            <div class="mt-4 grid grid-cols-3 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Attendance</p>
+                    <p class="font-semibold">{{ child.attendance_rate|default:0 }}%</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Average Grade</p>
+                    <p class="font-semibold">{{ child.average_grade|default:"N/A" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Assignments</p>
+                    <p class="font-semibold">{{ child.pending_assignments|default:0 }} pending</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-500">No children linked to your account.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

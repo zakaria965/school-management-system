@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">My Class</p>
+                <p class="text-2xl font-bold">{{ student.class_section|default:"Not Assigned" }}</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-home-line text-xl text-blue-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Attendance</p>
+                <p class="text-3xl font-bold">{{ attendance_rate }}%</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-calendar-check-line text-xl text-green-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Average Marks</p>
+                <p class="text-3xl font-bold">{{ avg_marks }}%</p>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-file-chart-line text-xl text-purple-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover transition-all duration-300 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Assignments</p>
+                <p class="text-3xl font-bold">{{ assignments.count }}</p>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+                <i class="ri-task-line text-xl text-orange-600"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assignments -->
+<div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+    <h3 class="text-lg font-semibold mb-4">Recent Assignments</h3>
+    <div class="space-y-3">
+        {% for assignment in assignments %}
+        <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-3">
+                    <i class="ri-file-text-line text-purple-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium">{{ assignment.title }}</p>
+                    <p class="text-sm text-gray-500">{{ assignment.subject.name }} | Due: {{ assignment.due_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+            <a href="{% url 'assignment-detail' assignment.pk %}" class="px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-lg hover:bg-primary-200 transition">
+                View
+            </a>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 text-center py-4">No assignments</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
